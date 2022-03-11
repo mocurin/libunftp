@@ -19,6 +19,7 @@ repository = "https://github.com/bolcom/libunftp/tree/master/crates/unftp-sbe-fs
 readme = "README.md"
 
 [dependencies]
+kuznechik = "0.3.0"
 async-trait = "0.1.52"
 futures = { version = "0.3.19", default-features = false, features = ["std"] }
 libunftp = { version="0.18.3", path="../../"}

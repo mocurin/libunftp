@@ -16,6 +16,46 @@ pub trait UserDetail: Send + Sync + Display + Debug {
     fn account_enabled(&self) -> bool {
         true
     }
+
+    /// Returns password string if it exists
+    fn password(&self) -> Option<String> {
+        None
+    }
+
+    /// Returns username string if it exists
+    fn username(&self) -> Option<String> {
+        None
+    }
+}
+
+/// User which keeps its credentials
+#[derive(Debug, PartialEq, Clone)]
+pub struct UserWithCreds {
+    /// Password string
+    pub password: Option<String>,
+    /// Username string
+    pub username: Option<String>,
+}
+
+impl UserDetail for UserWithCreds {
+    fn password(&self) -> Option<String> {
+        return self.password.clone();
+    }
+
+    fn username(&self) -> Option<String> {
+        return self.username.clone();
+    }
+}
+
+impl Display for UserWithCreds {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let username = match self.username() {
+            Some(s) => s,
+            None => String::new(),
+        };
+
+        write!(f, "User {username}")
+    }
 }
 
 /// DefaultUser is a default implementation of the `UserDetail` trait that doesn't hold any user

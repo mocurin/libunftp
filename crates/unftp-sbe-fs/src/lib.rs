@@ -19,6 +19,7 @@
 
 mod ext;
 pub use ext::ServerExt;
+// use kuznechik::{AlgOfb, KeyStore};
 
 use async_trait::async_trait;
 use libunftp::auth::UserDetail;
@@ -144,7 +145,12 @@ impl<User: UserDetail> StorageBackend<User> for Filesystem {
             file.seek(std::io::SeekFrom::Start(start_pos)).await?;
         }
 
-        Ok(Box::new(tokio::io::BufReader::with_capacity(4096, file)) as Box<dyn tokio::io::AsyncRead + Send + Sync + Unpin>)
+        let reader = tokio::io::BufReader::with_capacity(4096, file);
+
+        // let pass = _user.password();
+        // Decrypt here
+
+        Ok(Box::new(reader) as Box<dyn tokio::io::AsyncRead + Send + Sync + Unpin>)
     }
 
     async fn put<P: AsRef<Path> + Send, R: tokio::io::AsyncRead + Send + Sync + 'static + Unpin>(
@@ -167,8 +173,22 @@ impl<User: UserDetail> StorageBackend<User> for Filesystem {
         file.set_len(start_pos).await?;
         file.seek(std::io::SeekFrom::Start(start_pos)).await?;
 
+        // let gamma = vec![
+        //     0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xce, 0xf0, 0xa1, 0xb2, 0xc3, 0xd4, 0xe5, 0xf0, 0x01, 0x12, 0x23, 0x34, 0x45, 0x56, 0x67, 0x78, 0x89, 0x90,
+        //     0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+        // ];
+
+        // let pass = match user.password() {
+        //     Some(i) => i,
+        //     None => "".to_string(),
+        // };
+
+        // let ks = KeyStore::new().password(pass.as_str());
+
         let mut reader = tokio::io::BufReader::with_capacity(4096, bytes);
         let mut writer = tokio::io::BufWriter::with_capacity(4096, file);
+
+        // Encrypt here
 
         let bytes_copied = tokio::io::copy(&mut reader, &mut writer).await?;
         Ok(bytes_copied)
